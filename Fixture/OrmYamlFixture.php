@@ -6,12 +6,11 @@ use Doctrine\Common\Util\Inflector;
 
 class OrmYamlFixture extends AbstractFixture
 {
-    public function createObject($class, $data, $metadata, $options = array())
+
+    protected function filledObject($object, $data, $metadata, $options = array())
     {
         $mapping = array_keys($metadata->fieldMappings);
         $associations = array_keys($metadata->associationMappings);
-
-        $object = new $class;
         foreach ($data as $field => $value) {
             // Add the fields defined in the fistures file
             $method = Inflector::camelize('set_' . $field);
@@ -41,7 +40,6 @@ class OrmYamlFixture extends AbstractFixture
             }
         }
         $this->runServiceCalls($object);
-
         return $object;
     }
 }

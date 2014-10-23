@@ -7,15 +7,15 @@ use Doctrine\Common\Util\Inflector;
 class MongoYamlFixture extends AbstractFixture
 {
     /**
-     * Creates and returns one object based on the given data and metadata
+     * Returns one object based on the given data and metadata
      *
-     * @param $class object's class name
+     * @param $object instanciate object
      * @param $data array of the object's fixture data
      * @param $metadata the class metadata for doctrine
      * @param $embedded true for embedded documents
      * @return Object
      */
-    public function createObject($class, $data, $metadata, $options = array())
+    protected function filledObject($object, $data, $metadata, $options = array())
     {
         // options to state if a document is to be embedded or persisted on its own
         $embedded = isset($options['embedded']);

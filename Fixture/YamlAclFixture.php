@@ -35,4 +35,9 @@ class YamlAclFixture extends AbstractFixture
     {
         // No implementation for ACL fixtures
     }
+
+    protected function filledObject($object, $data, $metadata, $options = array())
+    {
+        // No implementation for ACL fixtures
+    }
 }

@@ -63,8 +63,11 @@ abstract class AbstractFixture
         $metadata = $this->getMetaDataForClass($class);
 
         foreach ($this->file['fixtures'] as $reference => $fixture_data) {
-            $object = $this->createObject($class, $fixture_data, $metadata);
-            $this->loader->setReference($reference, $object);
+            $object = $this->getObject($reference, $fixture_data, $metadata);
+            if ($object === null) {
+                $object = $this->createObject($class, $fixture_data, $metadata);
+                $this->loader->setReference($reference, $object);
+            }
             if (!$this->isReverseSaveOrder()) {
                 $manager->persist($object);
             }
@@ -110,5 +113,38 @@ abstract class AbstractFixture
      * @param $options options specific to each implementation
      * @return Object
      */
-    abstract public function createObject($class, $data, $metadata, $options = array());
+    public function createObject($class, $data, $metadata, $options = array())
+    {
+        $object = new $class;
+        return $this->filledObject($object, $data, $metadata, $options);
+    }
+
+    /**
+     * Filled and return the object based on the given data and metadata
+     *
+     * @param $class object's class name
+     * @param $data array of the object's fixture data
+     * @param $metadata the class metadata for doctrine
+     * @param $options options specific to each implementation
+     * @return Object
+     */
+    abstract protected function filledObject($object, $data, $metadata, $options = array());
+
+    /**
+     * Check if the object exists in the loader references
+     *
+     * @param $reference the reference name
+     * @param $data array of the object's fixture data
+     * @param $metadata the class metadata for doctrine
+     * @param $options options specific to each implementation
+     * @return Object|null
+     */
+    public function getObject($reference, $data, $metadata, $options = array())
+    {
+        $object = $this->loader->getReference($reference);
+        if ($object !== null) {
+            $this->filledObject($object, $data, $metadata, $options);
+        }
+        return $object;
+    }
 }
