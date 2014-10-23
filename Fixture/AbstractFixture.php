@@ -63,7 +63,7 @@ abstract class AbstractFixture
         $metadata = $this->getMetaDataForClass($class);
 
         foreach ($this->file['fixtures'] as $reference => $fixture_data) {
-            $object = $this->getObject($reference, $fixture_data, $metadata);
+            $object = $this->getObject($class, $reference, $fixture_data, $metadata);
             if ($object === null) {
                 $object = $this->createObject($class, $fixture_data, $metadata);
                 $this->loader->setReference($reference, $object);
@@ -139,10 +139,13 @@ abstract class AbstractFixture
      * @param $options options specific to each implementation
      * @return Object|null
      */
-    public function getObject($reference, $data, $metadata, $options = array())
+    public function getObject($class, $reference, $data, $metadata, $options = array())
     {
         $object = $this->loader->getReference($reference);
         if ($object !== null) {
+            if (!($object instanceof $class)) {
+                throw new \LogicException(sprintf('The object referenced as "%s" is not an instance of "%s"', $reference, $class));
+            }
             $this->filledObject($object, $data, $metadata, $options);
         }
         return $object;
